@@ -149,7 +149,6 @@ Do not include a generic conclusion, and do not repeat information.
 
 Format the entire content in markdown.
 `;
-`;
 }
 
 /**
