@@ -1,0 +1,95 @@
+You are a developer assistant. Create a full-stack web app using Node.js, Express.js, and EJS templating, deployable on Replit’s free plan. The app is for Shopify store owners to automatically generate and publish SEO-optimized blog posts or pages using OpenAI and Google Sheets integration. App must work on Replit without premium features and within 8 agents.
+
+✅ FEATURES TO BUILD:
+
+1. 📄 Admin Input Form (EJS frontend)
+   - Title (text input)
+   - Number of H2s (number input)
+   - H2 word limit (number input)
+   - Section Length (dropdown: Small, Medium, Large)
+   - Voice (dropdown: First person plural, First person singular, Second person, Third person, Professional)
+   - Enable Tables (checkbox)
+   - Enable Lists (checkbox)
+   - Enable H3 (checkbox)
+   - Intro Type (dropdown: None, Standard intro, Search Intent intro)
+   - FAQ Type (dropdown: No FAQ, FAQ + Short Answer, FAQ + Long Answer)
+   - Submit Button
+
+2. 🤖 Prompt Construction Logic
+   - When user submits form, construct an AI prompt using the following format:
+
+You are an expert SEO blog writer and content strategist. Your goal is to write high-quality, engaging, and SEO-optimized blog posts that sound natural and authoritative.
+
+Based on the following inputs: Title: [Title] Number of H2s: [Number] Section Length: [Small, Medium, Large] Voice: [Voice] Intro Type: [None / Standard / Search Intent] FAQ Section: [No FAQ / Short Answer / Long Answer] Enable H3, Lists, Tables: [Yes/No]
+
+Write the article with these specific rules:
+
+Each section must naturally transition into the next.
+
+Use consistent voice throughout.
+
+If intro is enabled, start with it. Else, go to H2.
+
+Each H2: write a curiosity-driven heading and 2–4 paragraphs based on section size.
+
+Use lists/tables/H3 only if enabled.
+
+End with a specific FAQ if enabled and a meta description.
+
+No H1, no generic conclusions, no repetition.
+
+Write like helping a smart, busy reader.
+
+markdown
+Copy
+Edit
+
+3. ✨ OpenAI Integration
+   - Use `openai` npm package with GPT-4 or GPT-3.5 (based on free tier key)
+   - Send prompt and receive article content as plain text or HTML
+
+4. 📊 Google Sheets Integration (for image sourcing)
+   - Connect to public Google Sheet via Google Sheets API using API key
+   - Read image URLs from these columns:
+     - `MAIN IMAGE` → Randomly choose 1 for featured image
+     - `SECONDARY IMAGE` → Choose 2–3 random for body content
+     - `VIDEOS` → Optional, embed iframe if present
+   - Embed images and videos into article content using `<img>` and `<iframe>`
+
+5. 🛒 Shopify Admin API Integration
+   - Use private app API key and store domain (from `.env`)
+   - Authenticate with API token
+   - Auto-publish blog post or page using:
+     - Title
+     - Featured image (from MAIN IMAGE)
+     - Body HTML (from OpenAI + Google Sheet content)
+
+6. ⚙️ Tech Stack & Structure
+   - Backend: Node.js + Express
+   - Frontend: EJS templating
+   - Styling: Bootstrap or simple inline CSS
+   - Deployment: Replit Free Plan (no database, use `.env`)
+   - `.env` should contain:
+     - `OPENAI_API_KEY`
+     - `GOOGLE_SHEET_ID`
+     - `GOOGLE_API_KEY`
+     - `SHOPIFY_DOMAIN`
+     - `SHOPIFY_API_KEY`
+     - `SHOPIFY_API_PASSWORD`
+
+7. 🔄 Agent Budgeting (Max 8)
+   - Agent 1: Set up basic Express.js project + routing
+   - Agent 2: Build the HTML/EJS form page
+   - Agent 3: Implement prompt logic + send to OpenAI
+   - Agent 4: Fetch random images from Google Sheets API
+   - Agent 5: Insert fetched images/videos into HTML body
+   - Agent 6: Integrate with Shopify Admin API
+   - Agent 7: Handle error/success messages + show result
+   - Agent 8: Final testing and polish for Replit deployment
+
+🎯 Objective:
+- Shopify content generator for blog/posts
+- Minimal coding dependency
+- Automatically embeds media from Google Sheets
+- Uses AI to generate SEO content
+- Publishes directly to Shopify
