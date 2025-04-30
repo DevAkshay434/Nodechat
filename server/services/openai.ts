@@ -88,8 +88,15 @@ function constructPrompt(formData: ContentForm): string {
   } = formData;
 
   // Convert products and collections to formatted strings
-  const productLinks = selectedProducts?.map(p => `[${p.title}](${p.url})`).join(', ') || '';
-  const collectionLinks = selectedCollections?.map(c => `[${c.title}](${c.url})`).join(', ') || '';
+  // Format products and collections for reference
+  const productLinks = selectedProducts?.map(p => ({
+    title: p.title,
+    url: p.url
+  })) || [];
+  const collectionLinks = selectedCollections?.map(c => ({
+    title: c.title,
+    url: c.url
+  })) || [];
 
   return `
 You are an expert SEO blog writer and content strategist. Your goal is to write high-quality, engaging, and SEO-optimized blog posts that sound natural and authoritative.
@@ -106,10 +113,15 @@ Enable H3: ${enableH3 ? 'Yes' : 'No'}
 Enable Lists: ${enableLists ? 'Yes' : 'No'}
 Enable Tables: ${enableTables ? 'Yes' : 'No'}
 
-Selected Products to Link: ${productLinks}
-Selected Collections to Link: ${collectionLinks}
+Available Products to Link: ${JSON.stringify(productLinks)}
+Available Collections to Link: ${JSON.stringify(collectionLinks)}
 
 Write the article with these specific rules:
+
+Important: When adding links in the content:
+- Use the exact URLs from the provided products/collections
+- Format links as proper markdown: [Product Name](Product URL)
+- Do not use undefined or placeholder values
 
 Each section must naturally transition into the next.
 
@@ -136,8 +148,10 @@ ${enableH3 ? 'Use H3 subheadings within H2 sections where appropriate to break d
 ${enableLists ? 'Include bullet or numbered lists where appropriate to organize information.' : 'Do not use bullet or numbered lists.'}
 ${enableTables ? 'Include at least one data table where appropriate to present comparative information.' : 'Do not include data tables.'}
 
-Before the FAQ section, include a placeholder for a video with this markdown:
-[VIDEO_PLACEHOLDER]
+Before the FAQ section, include a video section using this exact format:
+<div class="video-container">
+  [Add your product showcase video here]
+</div>
 
 ${faqType !== 'No FAQ' 
   ? `End with a FAQ section with 3-5 questions and ${faqType === 'FAQ + Short Answer' ? 'brief' : 'detailed'} answers. Include relevant product/collection links in the answers where appropriate.` 
