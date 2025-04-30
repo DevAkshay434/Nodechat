@@ -5,7 +5,7 @@ import { z } from "zod";
 import { contentFormSchema, type ContentForm } from "@shared/schema";
 import { generateContent } from "./services/openai";
 import { fetchImagesFromGoogleSheets } from "./services/googleSheets";
-import { publishToShopify } from "./services/shopify";
+import { publishToShopify, fetchShopifyProducts, fetchShopifyCollections } from "./services/shopify";
 
 export async function registerRoutes(app: Express): Promise<Server> {
   // Fetch Shopify products and collections
