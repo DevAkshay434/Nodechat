@@ -2,49 +2,71 @@ import axios from "axios";
 import { GoogleSheetsImage, ShopifyProduct, ShopifyCollection } from "@shared/schema";
 
 export async function fetchShopifyProducts(): Promise<ShopifyProduct[]> {
-  const shopDomain = process.env.SHOPIFY_DOMAIN;
-  const apiKey = process.env.SHOPIFY_API_KEY;
-  const password = process.env.SHOPIFY_API_PASSWORD;
+  try {
+    const shopDomain = process.env.SHOPIFY_DOMAIN;
+    const apiKey = process.env.SHOPIFY_API_KEY;
+    const password = process.env.SHOPIFY_API_PASSWORD;
 
-  if (!shopDomain || !apiKey || !password) {
-    throw new Error("Shopify API credentials not configured");
+    if (!shopDomain || !apiKey || !password) {
+      console.error("Missing Shopify credentials");
+      return [];
+    }
+
+    const auth = { username: apiKey, password };
+    const response = await axios.get(
+      `https://${shopDomain}/admin/api/2023-04/products.json`,
+      { auth }
+    );
+
+    if (!response.data?.products) {
+      console.error("No products found in response:", response.data);
+      return [];
+    }
+
+    return response.data.products.map((p: any) => ({
+      id: p.id.toString(),
+      title: p.title,
+      handle: p.handle,
+      url: `https://${shopDomain}/products/${p.handle}`
+    }));
+  } catch (error) {
+    console.error("Error fetching Shopify products:", error);
+    return [];
   }
-
-  const auth = { username: apiKey, password };
-  const response = await axios.get(
-    `https://${shopDomain}/admin/api/2023-04/products.json`,
-    { auth }
-  );
-
-  return response.data.products.map((p: any) => ({
-    id: p.id,
-    title: p.title,
-    handle: p.handle,
-    url: `https://${shopDomain}/products/${p.handle}`
-  }));
 }
 
 export async function fetchShopifyCollections(): Promise<ShopifyCollection[]> {
-  const shopDomain = process.env.SHOPIFY_DOMAIN;
-  const apiKey = process.env.SHOPIFY_API_KEY;
-  const password = process.env.SHOPIFY_API_PASSWORD;
+  try {
+    const shopDomain = process.env.SHOPIFY_DOMAIN;
+    const apiKey = process.env.SHOPIFY_API_KEY;
+    const password = process.env.SHOPIFY_API_PASSWORD;
 
-  if (!shopDomain || !apiKey || !password) {
-    throw new Error("Shopify API credentials not configured");
+    if (!shopDomain || !apiKey || !password) {
+      console.error("Missing Shopify credentials");
+      return [];
+    }
+
+    const auth = { username: apiKey, password };
+    const response = await axios.get(
+      `https://${shopDomain}/admin/api/2023-04/custom_collections.json`,
+      { auth }
+    );
+
+    if (!response.data?.custom_collections) {
+      console.error("No collections found in response:", response.data);
+      return [];
+    }
+
+    return response.data.custom_collections.map((c: any) => ({
+      id: c.id.toString(),
+      title: c.title,
+      handle: c.handle,
+      url: `https://${shopDomain}/collections/${c.handle}`
+    }));
+  } catch (error) {
+    console.error("Error fetching Shopify collections:", error);
+    return [];
   }
-
-  const auth = { username: apiKey, password };
-  const response = await axios.get(
-    `https://${shopDomain}/admin/api/2023-04/custom_collections.json`,
-    { auth }
-  );
-
-  return response.data.custom_collections.map((c: any) => ({
-    id: c.id,
-    title: c.title,
-    handle: c.handle,
-    url: `https://${shopDomain}/collections/${c.handle}`
-  }));
 }
 
 interface ShopifyPublishRequest {

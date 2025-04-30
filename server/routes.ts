@@ -10,21 +10,13 @@ import { publishToShopify } from "./services/shopify";
 export async function registerRoutes(app: Express): Promise<Server> {
   // Fetch Shopify products and collections
   app.get("/api/shopify/products", async (req, res) => {
-    try {
-      const products = await fetchShopifyProducts();
-      res.json({ success: true, products });
-    } catch (error) {
-      res.status(500).json({ success: false, error: error.message });
-    }
+    const products = await fetchShopifyProducts();
+    res.json({ success: true, products });
   });
 
   app.get("/api/shopify/collections", async (req, res) => {
-    try {
-      const collections = await fetchShopifyCollections();
-      res.json({ success: true, collections });
-    } catch (error) {
-      res.status(500).json({ success: false, error: error.message });
-    }
+    const collections = await fetchShopifyCollections();
+    res.json({ success: true, collections });
   });
   // API routes for content generation process
   app.post("/api/generate-content", async (req, res) => {
