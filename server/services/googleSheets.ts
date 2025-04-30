@@ -149,8 +149,7 @@ export async function fetchImagesFromGoogleSheets(
     }
 
     if (!effectiveSheetId) {
-      console.warn("No valid Google Sheet ID found, using placeholder images");
-      return PLACEHOLDER_IMAGES.slice(0, imageCount);
+      throw new Error("No valid Google Sheet ID configured");
     }
 
     try {
@@ -352,7 +351,7 @@ export async function fetchImagesFromGoogleSheets(
         }
 
         return images;
-      }
+      };
 
       if (
         !response.data ||

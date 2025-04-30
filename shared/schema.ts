@@ -38,8 +38,24 @@ export const contentItems = pgTable("content_items", {
   metadata: jsonb("metadata")
 });
 
+export interface ShopifyProduct {
+  id: string;
+  title: string;
+  handle: string;
+  url: string;
+}
+
+export interface ShopifyCollection {
+  id: string;
+  title: string;
+  handle: string;
+  url: string;
+}
+
 export const contentFormSchema = z.object({
   title: z.string().min(1, "Title is required"),
+  selectedProducts: z.array(z.string()).optional(),
+  selectedCollections: z.array(z.string()).optional(),
   numH2s: z.coerce.number().min(1).max(10),
   h2WordLimit: z.coerce.number().min(3).max(20),
   sectionLength: z.enum(["Small", "Medium", "Large"]),
