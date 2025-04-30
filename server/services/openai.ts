@@ -148,9 +148,9 @@ ${enableH3 ? 'Use H3 subheadings within H2 sections where appropriate to break d
 ${enableLists ? 'Include bullet or numbered lists where appropriate to organize information.' : 'Do not use bullet or numbered lists.'}
 ${enableTables ? 'Include at least one data table where appropriate to present comparative information.' : 'Do not include data tables.'}
 
-Before the FAQ section, include a video section using this exact format:
+Before the FAQ section, include a video section. If an iframe is provided, use the exact iframe HTML. Here is the format:
 <div class="video-container">
-  [Add your product showcase video here]
+  [VIDEO_IFRAME]
 </div>
 
 ${faqType !== 'No FAQ' 

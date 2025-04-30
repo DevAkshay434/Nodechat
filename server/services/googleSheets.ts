@@ -342,11 +342,23 @@ export async function fetchImagesFromGoogleSheets(
           // +2 to allow for video + links
           const videoRow = dataRows[getRandomRow()];
           if (videoRow && videoRow[videoColIndex]) {
-            images.push({
-              url: videoRow[videoColIndex],
-              alt: "Video content",
-              type: "video",
-            });
+            const videoContent = videoRow[videoColIndex];
+            // Check if content is an iframe
+            if (videoContent.toLowerCase().includes('<iframe')) {
+              images.push({
+                url: videoContent, // Store full iframe HTML
+                alt: "Video iframe content",
+                type: "video",
+                isIframe: true
+              });
+            } else {
+              images.push({
+                url: videoContent,
+                alt: "Video content",
+                type: "video",
+                isIframe: false
+              });
+            }
           }
         }
 
