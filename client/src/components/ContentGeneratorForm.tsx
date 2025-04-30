@@ -5,13 +5,15 @@ import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
 import { Checkbox } from "@/components/ui/checkbox";
+import { Badge } from "@/components/ui/badge";
 import { Form, FormControl, FormDescription, FormField, FormItem, FormLabel } from "@/components/ui/form";
 import { zodResolver } from "@hookform/resolvers/zod";
 import { useForm } from "react-hook-form";
 import { contentFormSchema, type ContentForm } from "@shared/schema";
-import { useMutation } from "@tanstack/react-query";
+import { useMutation, useQuery } from "@tanstack/react-query";
 import { apiRequest } from "@/lib/queryClient";
 import { Wand2 } from "lucide-react";
+import { type ShopifyProduct, type ShopifyCollection } from "@shared/schema";
 
 interface ContentGeneratorFormProps {
   onGenerationComplete: (result: any) => void;
@@ -19,6 +21,24 @@ interface ContentGeneratorFormProps {
 }
 
 export default function ContentGeneratorForm({ onGenerationComplete, onStatusChange }: ContentGeneratorFormProps) {
+  // Fetch products and collections
+  const { data: productsData } = useQuery({
+    queryKey: ['shopifyProducts'],
+    queryFn: async () => {
+      const response = await apiRequest('GET', '/api/shopify/products');
+      const data = await response.json();
+      return data.products as ShopifyProduct[];
+    }
+  });
+
+  const { data: collectionsData } = useQuery({
+    queryKey: ['shopifyCollections'],
+    queryFn: async () => {
+      const response = await apiRequest('GET', '/api/shopify/collections');
+      const data = await response.json();
+      return data.collections as ShopifyCollection[];
+    }
+  });
   // Define the form with React Hook Form and Zod validation
   const form = useForm<ContentForm>({
     resolver: zodResolver(contentFormSchema),
@@ -298,6 +318,105 @@ export default function ContentGeneratorForm({ onGenerationComplete, onStatusCha
               </div>
             </div>
             
+            {/* Shopify Products & Collections */}
+            <div>
+              <h3 className="text-md font-medium text-neutral-700 mb-4">Shopify Products & Collections</h3>
+              
+              <div className="grid grid-cols-1 gap-y-6 gap-x-4 sm:grid-cols-6">
+                <FormField
+                  control={form.control}
+                  name="selectedProducts"
+                  render={({ field }) => (
+                    <FormItem className="sm:col-span-3">
+                      <FormLabel>Select Products</FormLabel>
+                      <Select 
+                        onValueChange={(value) => field.onChange([...field.value || [], value])}
+                      >
+                        <FormControl>
+                          <SelectTrigger>
+                            <SelectValue placeholder="Choose products to link" />
+                          </SelectTrigger>
+                        </FormControl>
+                        <SelectContent>
+                          {productsData?.map((product) => (
+                            <SelectItem key={product.id} value={product.id}>
+                              {product.title}
+                            </SelectItem>
+                          ))}
+                        </SelectContent>
+                      </Select>
+                      {field.value && field.value.length > 0 && (
+                        <div className="mt-2">
+                          <p className="text-sm text-neutral-500">Selected products:</p>
+                          <div className="flex flex-wrap gap-2 mt-1">
+                            {field.value.map((productId) => {
+                              const product = productsData?.find(p => p.id === productId);
+                              return product && (
+                                <Badge 
+                                  key={product.id}
+                                  variant="secondary"
+                                  className="cursor-pointer"
+                                  onClick={() => field.onChange(field.value?.filter(id => id !== product.id))}
+                                >
+                                  {product.title} ×
+                                </Badge>
+                              );
+                            })}
+                          </div>
+                        </div>
+                      )}
+                    </FormItem>
+                  )}
+                />
+
+                <FormField
+                  control={form.control}
+                  name="selectedCollections"
+                  render={({ field }) => (
+                    <FormItem className="sm:col-span-3">
+                      <FormLabel>Select Collections</FormLabel>
+                      <Select 
+                        onValueChange={(value) => field.onChange([...field.value || [], value])}
+                      >
+                        <FormControl>
+                          <SelectTrigger>
+                            <SelectValue placeholder="Choose collections to link" />
+                          </SelectTrigger>
+                        </FormControl>
+                        <SelectContent>
+                          {collectionsData?.map((collection) => (
+                            <SelectItem key={collection.id} value={collection.id}>
+                              {collection.title}
+                            </SelectItem>
+                          ))}
+                        </SelectContent>
+                      </Select>
+                      {field.value && field.value.length > 0 && (
+                        <div className="mt-2">
+                          <p className="text-sm text-neutral-500">Selected collections:</p>
+                          <div className="flex flex-wrap gap-2 mt-1">
+                            {field.value.map((collectionId) => {
+                              const collection = collectionsData?.find(c => c.id === collectionId);
+                              return collection && (
+                                <Badge 
+                                  key={collection.id}
+                                  variant="secondary"
+                                  className="cursor-pointer"
+                                  onClick={() => field.onChange(field.value?.filter(id => id !== collection.id))}
+                                >
+                                  {collection.title} ×
+                                </Badge>
+                              );
+                            })}
+                          </div>
+                        </div>
+                      )}
+                    </FormItem>
+                  )}
+                />
+              </div>
+            </div>
+
             {/* Content Elements Section */}
             <div>
               <h3 className="text-md font-medium text-neutral-700 mb-4">Content Elements</h3>
