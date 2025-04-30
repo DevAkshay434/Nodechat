@@ -82,8 +82,14 @@ function constructPrompt(formData: ContentForm): string {
     enableLists,
     enableH3,
     introType,
-    faqType
+    faqType,
+    selectedProducts,
+    selectedCollections
   } = formData;
+
+  // Convert products and collections to formatted strings
+  const productLinks = selectedProducts?.map(p => `[${p.title}](${p.url})`).join(', ') || '';
+  const collectionLinks = selectedCollections?.map(c => `[${c.title}](${c.url})`).join(', ') || '';
 
   return `
 You are an expert SEO blog writer and content strategist. Your goal is to write high-quality, engaging, and SEO-optimized blog posts that sound natural and authoritative.
@@ -100,11 +106,20 @@ Enable H3: ${enableH3 ? 'Yes' : 'No'}
 Enable Lists: ${enableLists ? 'Yes' : 'No'}
 Enable Tables: ${enableTables ? 'Yes' : 'No'}
 
+Selected Products to Link: ${productLinks}
+Selected Collections to Link: ${collectionLinks}
+
 Write the article with these specific rules:
 
 Each section must naturally transition into the next.
 
 Use consistent ${voice} voice throughout.
+
+Internal Linking Rules:
+- Naturally incorporate links to the selected products and collections throughout the content
+- Place links where they provide value and context to the reader
+- Avoid forced or excessive linking
+- Use varied anchor text that includes both exact match and related terms
 
 ${introType !== 'None' 
   ? `Start with a ${introType === 'Search Intent intro' 
@@ -115,13 +130,17 @@ ${introType !== 'None'
 For each H2 section (total of ${numH2s}):
 - Write a curiosity-driven heading with at most ${h2WordLimit} words
 - Write ${sectionLength === 'Small' ? '2' : sectionLength === 'Medium' ? '3' : '4'} paragraphs based on the section size
+- Include at least one relevant product or collection link per section where appropriate
 
 ${enableH3 ? 'Use H3 subheadings within H2 sections where appropriate to break down complex topics.' : 'Do not use H3 subheadings.'}
 ${enableLists ? 'Include bullet or numbered lists where appropriate to organize information.' : 'Do not use bullet or numbered lists.'}
 ${enableTables ? 'Include at least one data table where appropriate to present comparative information.' : 'Do not include data tables.'}
 
+Before the FAQ section, include a placeholder for a video with this markdown:
+[VIDEO_PLACEHOLDER]
+
 ${faqType !== 'No FAQ' 
-  ? `End with a FAQ section with 3-5 questions and ${faqType === 'FAQ + Short Answer' ? 'brief' : 'detailed'} answers.` 
+  ? `End with a FAQ section with 3-5 questions and ${faqType === 'FAQ + Short Answer' ? 'brief' : 'detailed'} answers. Include relevant product/collection links in the answers where appropriate.` 
   : 'Do not include a FAQ section.'}
 
 Write a meta description (150-160 characters) at the very end.
@@ -129,6 +148,7 @@ Write a meta description (150-160 characters) at the very end.
 Do not include a generic conclusion, and do not repeat information.
 
 Format the entire content in markdown.
+`;
 `;
 }
 
